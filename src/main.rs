@@ -37,7 +37,6 @@ fn suckd(
             }
             _ => return,
         }
-        
         let raw = pressed.values().fold(0u8, |a, b| a | b);
         let cleaned = clean(raw);
         let xor = cleaned ^ prev_cleaned;
@@ -69,7 +68,6 @@ fn main() {
         (Key::Dot,   0b0010u8),
         (Key::KeyZ,  0b0110u8),
         (Key::KeyC,  0b0011u8),
-        
     ]);
     if let Err(error) = suckd(input_key_directions, Key::Num1, Key::Num2, Key::Num3, Key::Num4) {
         eprintln!("error: {:?}", error);
