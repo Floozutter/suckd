@@ -40,6 +40,7 @@ fn suckd(
         let raw = pressed.values().fold(0u8, |a, b| a | b);
         let cleaned = clean(raw);
         let xor = cleaned ^ prev_cleaned;
+        prev_cleaned = cleaned;
         if xor & 0b1000u8 != 0u8 {
             send_key(up, cleaned & 0b1000u8 != 0u8);
         }
@@ -52,7 +53,6 @@ fn suckd(
         if xor & 0b0001u8 != 0u8 {
             send_key(right, cleaned & 0b0001u8 != 0u8);
         }
-        prev_cleaned = cleaned;
     })
 }
 
