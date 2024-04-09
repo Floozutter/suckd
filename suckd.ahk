@@ -95,8 +95,8 @@ registeredKeys := Map()
 Loop keys.Length {
     If (!registeredKeys.has(keys[A_Index])) {
         registeredKeys[keys[A_Index]] := 1
-        Hotkey(keys[A_Index], callback)
-        Hotkey(keys[A_Index] . " Up", callback)
+        Hotkey("*" . keys[A_Index], callback)
+        Hotkey("*" . keys[A_Index] . " Up", callback)
     }
 }
 
