@@ -1,8 +1,8 @@
 suspendKey := "F1"
 upKeys := ["w", "u"]
-leftKeys := ["a", "n", "z"]
-downKeys := ["s", ",", "z", "c"]
-rightKeys := ["d", "m", "c"]
+leftKeys := ["a", "n"]
+downKeys := ["s", ","]
+rightKeys := ["d", "m"]
 upButton := "w"
 leftButton := "a"
 downButton := "s"
