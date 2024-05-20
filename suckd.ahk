@@ -1,5 +1,5 @@
 suspendKey := "F1"
-upKeys := ["w", "u"]
+upKeys := ["w", "h"]
 leftKeys := ["a", "n"]
 downKeys := ["s", ","]
 rightKeys := ["d", "m"]
