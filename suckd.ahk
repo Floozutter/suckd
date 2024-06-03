@@ -1,4 +1,5 @@
 suspendKey := "F1"
+disabledKeys := ["LWin"]
 upKeys := ["w", "h"]
 leftKeys := ["a", "n"]
 downKeys := ["s", ","]
@@ -89,15 +90,21 @@ keys.Push(upKeys*)
 keys.Push(leftKeys*)
 keys.Push(downKeys*)
 keys.Push(rightKeys*)
-
 registeredKeys := Map()
-
 Loop keys.Length {
     If (!registeredKeys.has(keys[A_Index])) {
         registeredKeys[keys[A_Index]] := 1
         Hotkey("*" . keys[A_Index], callback)
         Hotkey("*" . keys[A_Index] . " Up", callback)
     }
+}
+
+disabledCallback(hotkeyName) {
+    return
+}
+
+Loop disabledKeys.Length {
+    Hotkey(disabledKeys[A_Index], disabledCallback)
 }
 
 suspendCallback(hotkeyName) {
