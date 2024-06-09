@@ -84,7 +84,6 @@ callback(hotkeyName) {
         }
     }
 }
-
 keys := []
 keys.Push(upKeys*)
 keys.Push(leftKeys*)
@@ -102,7 +101,6 @@ Loop keys.Length {
 disabledCallback(hotkeyName) {
     return
 }
-
 Loop disabledKeys.Length {
     Hotkey(disabledKeys[A_Index], disabledCallback)
 }
@@ -111,5 +109,4 @@ suspendCallback(hotkeyName) {
     Suspend(-1)
     SoundPlay(A_IsSuspended ? "*16" : "*64")
 }
-
 Hotkey(suspendKey, suspendCallback, "S")
