@@ -1,3 +1,6 @@
+#Requires AutoHotKey v2
+#Warn
+
 suspendKey := "F1"
 disabledKeys := ["LWin"]
 upKeys := ["w", "h"]
