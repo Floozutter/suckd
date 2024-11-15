@@ -1,82 +1,48 @@
 #Requires AutoHotKey v2
 #Warn
 
+
+; inputs
 suspendKey := "F1"
 disabledKeys := ["LWin"]
-upKeys := ["w", "h"]
 leftKeys := ["a", "n"]
-downKeys := ["s", "."]
 rightKeys := ["d", "m"]
-upButton := "w"
+upKeys := ["Space", "h"]
+downKeys := ["s", "."]
+
+; outputs
 leftButton := "a"
-downButton := "s"
 rightButton := "d"
+upButton := "Space"
+downButton := "s"
+
+; SOCD cleaning modes
+MODE := {NEUTRAL: 0, LAST_INPUT_PRIORITY: 1, UP_PRIORITY: 2}
+modeX := MODE.LAST_INPUT_PRIORITY
+modeY := MODE.UP_PRIORITY
+
 
 InstallKeybdHook()
 
-callback(hotkeyName) {
-    ; get raw direction key presses
-    up := 0
-    Loop upKeys.length {
-        If (GetKeyState(upKeys[A_Index], "p")) {
-            up := 1
+anyPressed(keys) {
+    pressed := 0
+    Loop keys.length {
+        If (GetKeyState(keys[A_Index], "p")) {
+            pressed := 1
             Break
         }
     }
-    left := 0
-    Loop leftKeys.length {
-        If (GetKeyState(leftKeys[A_Index], "p")) {
-            left := 1
-            Break
-        }
-    }
-    down := 0
-    Loop downKeys.length {
-        If (GetKeyState(downKeys[A_Index], "p")) {
-            down := 1
-            Break
-        }
-    }
-    right := 0
-    Loop rightKeys.length {
-        If (GetKeyState(rightKeys[A_Index], "p")) {
-            right := 1
-            Break
-        }
-    }
-    ; clean simultaneous opposite cardinal directions
-    If (left && right) {
-        left := 0
-        right := 0
-    }
-    If (up && down) {
-        down := 0
-    }
-    ; get output key states
-    upState := GetKeyState(upButton)
+    return pressed
+}
+
+updateX(left, right) {
     leftState := GetKeyState(leftButton)
-    downState := GetKeyState(downButton)
     rightState := GetKeyState(rightButton)
-    ; change output key states if necessary
-    If (up != upState) {
-        If (up) {
-            SendInput("{" . upButton . " Down}")
-        } Else {
-            SendInput("{" . upButton . " Up}")
-        }
-    }
     If (left != leftState) {
         If (left) {
             SendInput("{" . leftButton . " Down}")
         } Else {
             SendInput("{" . leftButton . " Up}")
-        }
-    }
-    If (down != downState) {
-        If (down) {
-            SendInput("{" . downButton . " Down}")
-        } Else {
-            SendInput("{" . downButton . " Up}")
         }
     }
     If (right != rightState) {
@@ -87,29 +53,111 @@ callback(hotkeyName) {
         }
     }
 }
-keys := []
-keys.Push(upKeys*)
-keys.Push(leftKeys*)
-keys.Push(downKeys*)
-keys.Push(rightKeys*)
-registeredKeys := Map()
-Loop keys.Length {
-    If (!registeredKeys.has(keys[A_Index])) {
-        registeredKeys[keys[A_Index]] := 1
-        Hotkey("*" . keys[A_Index], callback)
-        Hotkey("*" . keys[A_Index] . " Up", callback)
+
+updateY(up, down) {
+    upState := GetKeyState(upButton)
+    downState := GetKeyState(downButton)
+    If (up != upState) {
+        If (up) {
+            SendInput("{" . upButton . " Down}")
+        } Else {
+            SendInput("{" . upButton . " Up}")
+        }
+    }
+    If (down != downState) {
+        If (down) {
+            SendInput("{" . downButton . " Down}")
+        } Else {
+            SendInput("{" . downButton . " Up}")
+        }
     }
 }
 
-disabledCallback(hotkeyName) {
-    return
+onLeft(_hotkeyName) {
+    left := anyPressed(leftKeys)
+    right := anyPressed(rightKeys)
+    If (left && right) {
+        If (modeX == MODE.LAST_INPUT_PRIORITY) {
+            right := 0
+        } Else {
+            left := 0
+            right := 0
+        }
+    }
+    updateX(left, right)
 }
-Loop disabledKeys.Length {
-    Hotkey(disabledKeys[A_Index], disabledCallback)
+Loop leftKeys.Length {
+    Hotkey("*" . leftKeys[A_Index], onLeft)
+    Hotkey("*" . leftKeys[A_Index] . " Up", onLeft)
 }
 
-suspendCallback(hotkeyName) {
+onRight(_hotkeyName) {
+    left := anyPressed(leftKeys)
+    right := anyPressed(rightKeys)
+    If (left && right) {
+        If (modeX == MODE.LAST_INPUT_PRIORITY) {
+            left := 0
+        } Else {
+            left := 0
+            right := 0
+        }
+    }
+    updateX(left, right)
+}
+Loop rightKeys.Length {
+    Hotkey("*" . rightKeys[A_Index], onRight)
+    Hotkey("*" . rightKeys[A_Index] . " Up", onRight)
+}
+
+onUp(_hotkeyName) {
+    up := anyPressed(upKeys)
+    down := anyPressed(downKeys)
+    If (up && down) {
+        If (modeY == MODE.LAST_INPUT_PRIORITY) {
+            down := 0
+        } Else If (modeY == MODE.UP_PRIORITY) {
+            down := 0
+        } Else {
+            up := 0
+            down := 0
+        }
+    }
+    updateY(up, down)
+}
+Loop upKeys.Length {
+    Hotkey("*" . upKeys[A_Index], onUp)
+    Hotkey("*" . upKeys[A_Index] . " Up", onUp)
+}
+
+onDown(_hotkeyName) {
+    up := anyPressed(upKeys)
+    down := anyPressed(downKeys)
+    If (up && down) {
+        If (modeY == MODE.LAST_INPUT_PRIORITY) {
+            up := 0
+        } Else If (modeY == MODE.UP_PRIORITY) {
+            down := 0
+        } Else {
+            up := 0
+            down := 0
+        }
+    }
+    updateY(up, down)
+}
+Loop downKeys.Length {
+    Hotkey("*" . downKeys[A_Index], onDown)
+    Hotkey("*" . downKeys[A_Index] . " Up", onDown)
+}
+
+onSuspend(_hotkeyName) {
     Suspend(-1)
     SoundPlay(A_IsSuspended ? "*16" : "*64")
 }
-Hotkey(suspendKey, suspendCallback, "S")
+Hotkey(suspendKey, onSuspend, "S")
+
+onDisabled(_hotkeyName) {
+    return
+}
+Loop disabledKeys.Length {
+    Hotkey(disabledKeys[A_Index], onDisabled)
+}
