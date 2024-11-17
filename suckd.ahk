@@ -35,40 +35,13 @@ anyPressed(keys) {
     return pressed
 }
 
-updateX(left, right) {
-    leftState := GetKeyState(leftButton)
-    rightState := GetKeyState(rightButton)
-    If (left != leftState) {
-        If (left) {
-            SendInput("{" . leftButton . " Down}")
+updateKey(keyName, pressed) {
+    state := GetKeyState(keyName)
+    If (state != pressed) {
+        If (pressed) {
+            SendInput("{" . keyName . " Down}")
         } Else {
-            SendInput("{" . leftButton . " Up}")
-        }
-    }
-    If (right != rightState) {
-        If (right) {
-            SendInput("{" . rightButton . " Down}")
-        } Else {
-            SendInput("{" . rightButton . " Up}")
-        }
-    }
-}
-
-updateY(up, down) {
-    upState := GetKeyState(upButton)
-    downState := GetKeyState(downButton)
-    If (up != upState) {
-        If (up) {
-            SendInput("{" . upButton . " Down}")
-        } Else {
-            SendInput("{" . upButton . " Up}")
-        }
-    }
-    If (down != downState) {
-        If (down) {
-            SendInput("{" . downButton . " Down}")
-        } Else {
-            SendInput("{" . downButton . " Up}")
+            SendInput("{" . keyName . " Up}")
         }
     }
 }
@@ -84,7 +57,8 @@ onLeft(_hotkeyName) {
             right := 0
         }
     }
-    updateX(left, right)
+    updateKey(leftButton, left)
+    updateKey(rightButton, right)
 }
 Loop leftKeys.Length {
     Hotkey("*" . leftKeys[A_Index], onLeft)
@@ -102,7 +76,8 @@ onRight(_hotkeyName) {
             right := 0
         }
     }
-    updateX(left, right)
+    updateKey(leftButton, left)
+    updateKey(rightButton, right)
 }
 Loop rightKeys.Length {
     Hotkey("*" . rightKeys[A_Index], onRight)
@@ -122,7 +97,8 @@ onUp(_hotkeyName) {
             down := 0
         }
     }
-    updateY(up, down)
+    updateKey(upButton, up)
+    updateKey(downButton, down)
 }
 Loop upKeys.Length {
     Hotkey("*" . upKeys[A_Index], onUp)
@@ -142,7 +118,8 @@ onDown(_hotkeyName) {
             down := 0
         }
     }
-    updateY(up, down)
+    updateKey(upButton, up)
+    updateKey(downButton, down)
 }
 Loop downKeys.Length {
     Hotkey("*" . downKeys[A_Index], onDown)
